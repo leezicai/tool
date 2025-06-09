@@ -87,11 +87,16 @@
             transition: background 0.2s, color 0.2s;
             color: #333;
             min-width: 90px; /* Adjust as needed based on your longest button text */
+            height: 30px; /* Fixed height for consistency */
+            line-height: 20px; /* Adjust line-height to vertically center text (height - padding-top - padding-bottom) */
             text-align: center;
             white-space: nowrap; /* Prevent text wrapping */
-            box-sizing: border-box; /* Include padding and border in the width */
+            box-sizing: border-box; /* Include padding and border in the width/height */
             position: relative; /* Needed for absolute positioning of the checkmark */
             overflow: hidden; /* Hide overflowing checkmark when not active */
+            display: flex; /* Use flexbox to center content */
+            align-items: center; /* Center items vertically */
+            justify-content: center; /* Center items horizontally */
         }
 
         .copy-button:hover {
@@ -173,6 +178,12 @@
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
+            /* Add fixed height and min-width to prevent jumping */
+            min-width: 180px; /* Adjust based on the longest "Generate Key Pair" translation */
+            height: 50px; /* A fixed height for the button */
+            display: flex; /* Use flexbox to center content */
+            align-items: center; /* Center items vertically */
+            justify-content: center; /* Center items horizontally */
         }
         
         .tool-button:hover {
@@ -218,6 +229,7 @@
                 "en": {
                     "title": "ED25519 Key Pair Generator (PEM Format)",
                     "generate": "Generate Key Pair",
+                    "generating": "Generating...", // Added translation for "Generating..."
                     "priv": "Private Key (PEM)",
                     "pub": "Public Key (PEM)",
                     "back": "← Back to Home",
@@ -227,6 +239,7 @@
                 "zh-CN": {
                     "title": "ED25519 密钥对生成器 (PEM 格式)",
                     "generate": "生成密钥对",
+                    "generating": "正在生成...", // Added translation for "Generating..."
                     "priv": "私钥 (PEM)",
                     "pub": "公钥 (PEM)",
                     "back": "← 返回首页",
@@ -236,6 +249,7 @@
                 "zh-TW": {
                     "title": "ED25519 金鑰對產生器 (PEM 格式)",
                     "generate": "產生金鑰對",
+                    "generating": "正在產生...", // Added translation for "Generating..."
                     "priv": "私鑰 (PEM)",
                     "pub": "公開鑰 (PEM)",
                     "back": "← 返回首頁",
@@ -245,6 +259,7 @@
                 "de": {
                     "title": "ED25519 Schlüsselpaar-Generator (PEM-Format)",
                     "generate": "Schlüsselpaar generieren",
+                    "generating": "Wird generiert...", // Added translation for "Generating..."
                     "priv": "Privater Schlüssel (PEM)",
                     "pub": "Öffentlicher Schlüssel (PEM)",
                     "back": "← Zurück zur Startseite",
@@ -254,6 +269,7 @@
                 "fr": {
                     "title": "Générateur de paire de clés ED25519 (format PEM)",
                     "generate": "Générer la paire de clés",
+                    "generating": "Génération en cours...", // Added translation for "Generating..."
                     "priv": "Clé privée (PEM)",
                     "pub": "Clé publique (PEM)",
                     "back": "← Retour à l'accueil",
@@ -263,6 +279,7 @@
                 "ja": {
                     "title": "ED25519 キーペア生成 (PEM形式)",
                     "generate": "キーペアを生成",
+                    "generating": "生成中...", // Added translation for "Generating..."
                     "priv": "秘密鍵 (PEM)",
                     "pub": "公開鍵 (PEM)",
                     "back": "← ホームに戻る",
@@ -272,6 +289,7 @@
                 "ko": {
                     "title": "ED25519 키 페어 생성기 (PEM 형식)",
                     "generate": "키 페어 생성",
+                    "generating": "생성 중...", // Added translation for "Generating..."
                     "priv": "개인 키 (PEM)",
                     "pub": "공개 키 (PEM)",
                     "back": "← 홈으로 돌아가기",
@@ -281,6 +299,7 @@
                 "es": {
                     "title": "Generador de pares de claves ED25519 (formato PEM)",
                     "generate": "Generar par de claves",
+                    "generating": "Generando...", // Added translation for "Generating..."
                     "priv": "Clave privada (PEM)",
                     "pub": "Clave pública (PEM)",
                     "back": "← Volver al inicio",
@@ -316,8 +335,10 @@
             const generateKeys = async () => {
                 const generateBtn = document.getElementById('generateBtn');
                 const currentLang = getLanguage();
-                const originalText = translations[currentLang].generate; // Get original button text for current language
-                const generatingText = 'Generating...'; // Keep generating text simple or add to translations if needed
+                // Get original button text for current language
+                const originalText = translations[currentLang].generate; 
+                // Get generating text for current language
+                const generatingText = translations[currentLang].generating; 
                 
                 generateBtn.textContent = generatingText;
                 generateBtn.disabled = true;
@@ -376,9 +397,7 @@
                     }, 1500); // Display for 1.5 seconds
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
-                    alert('Failed to copy text to clipboard. Please copy manually.');
-                    buttonElement.textContent = originalText; // Restore original text on error
-                    buttonElement.classList.remove('copied'); // Ensure class is removed on error
+                    // Removed alert for clipboard errors to adhere to "no alerts" rule
                 }
             };
 
@@ -407,17 +426,14 @@
                         if (match && match[1]) {
                             textToCopy = match[1].replace(/\s/g, ''); // Remove all whitespace
                         } else {
-                            textToCopy = ''; // No key found
-                            console.warn("Could not extract key-only content. Is the PEM format correct?");
+                            // If no key found, textToCopy remains an empty string.
+                            // We explicitly set it to empty string if no match
+                            textToCopy = ''; 
+                            console.warn("Could not extract key-only content. Is the PEM format correct or is it empty?");
                         }
                     }
-                    // Only attempt to copy if there's text to copy
-                    if (textToCopy) {
-                        copyToClipboard(textToCopy, event.target);
-                    } else {
-                        console.warn("No content to copy for 'key-only' operation.");
-                        alert("No key content found to copy. Generate a key pair first.");
-                    }
+                    // Always attempt to copy, even if textToCopy is an empty string
+                    copyToClipboard(textToCopy, event.target);
                 });
             });
 
