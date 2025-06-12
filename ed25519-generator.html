@@ -58,6 +58,74 @@
             color: #764ba2;
         }
 
+        .browser-support {
+            background: rgba(103, 126, 234, 0.1);
+            border: 1px solid rgba(103, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .browser-support h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .browser-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .browser-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        .browser-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .browser-version {
+            font-size: 14px;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .support-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .support-status.supported {
+            background-color: #4CAF50;
+        }
+
+        .support-status.not-supported {
+            background-color: #f44336;
+        }
+
         .tool-label-container {
             display: flex;
             justify-content: space-between;
@@ -74,7 +142,7 @@
 
         .copy-buttons {
             display: flex;
-            gap: 10px; /* Space between copy buttons */
+            gap: 10px;
         }
 
         .copy-button {
@@ -86,68 +154,65 @@
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
             color: #333;
-            min-width: 90px; /* Adjust as needed based on your longest button text */
-            height: 30px; /* Fixed height for consistency */
-            line-height: 20px; /* Adjust line-height to vertically center text (height - padding-top - padding-bottom) */
+            min-width: 90px;
+            height: 30px;
+            line-height: 20px;
             text-align: center;
-            white-space: nowrap; /* Prevent text wrapping */
-            box-sizing: border-box; /* Include padding and border in the width/height */
-            position: relative; /* Needed for absolute positioning of the checkmark */
-            overflow: hidden; /* Hide overflowing checkmark when not active */
-            display: flex; /* Use flexbox to center content */
-            align-items: center; /* Center items vertically */
-            justify-content: center; /* Center items horizontally */
+            white-space: nowrap;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .copy-button:hover {
             background: #d0d0d0;
         }
 
-        /* --- Checkmark Icon Styles --- */
         .copy-button.copied {
-            color: transparent; /* Hide original text */
-            background: #e0e0e0; /* Keep original button background */
+            color: transparent;
+            background: #e0e0e0;
         }
 
         .copy-button.copied::after {
-            content: ''; /* Empty content for pseudo-element */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Center the icon */
-            width: 20px; /* Size of the circle */
-            height: 20px;
-            background-color: #4CAF50; /* Green circle background */
-            border-radius: 50%; /* Make it a circle */
-            opacity: 1;
-            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px; /* Size of the checkmark */
-            color: white; /* Color of the checkmark */
-        }
-        
-        .copy-button.copied::before {
-            content: '✓'; /* Checkmark symbol */
+            content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 1; /* Ensure checkmark is above circle */
-            color: white; /* Color of the checkmark */
-            font-size: 14px; /* Size of the checkmark */
+            width: 20px;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            opacity: 1;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .copy-button.copied::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            color: white;
+            font-size: 14px;
             opacity: 1;
             transition: opacity 0.3s ease-out;
         }
 
-        /* Initial state of the icon (hidden) */
         .copy-button:not(.copied)::after,
         .copy-button:not(.copied)::before {
             opacity: 0;
-            transform: translate(-50%, -50%) scale(0.5); /* Start smaller and invisible */
+            transform: translate(-50%, -50%) scale(0.5);
         }
-
 
         .tool-textarea {
             width: 100%;
@@ -178,12 +243,11 @@
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
-            /* Add fixed height and min-width to prevent jumping */
-            min-width: 180px; /* Adjust based on the longest "Generate Key Pair" translation */
-            height: 50px; /* A fixed height for the button */
-            display: flex; /* Use flexbox to center content */
-            align-items: center; /* Center items vertically */
-            justify-content: center; /* Center items horizontally */
+            min-width: 180px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .tool-button:hover {
@@ -200,6 +264,49 @@
             <a href="./index.html" class="back-link">
                 <span data-translate="back">← Back to Home</span>
             </a>
+        </div>
+
+        <!-- Browser Support Section -->
+        <div class="browser-support">
+            <h3 data-translate="browserSupport">Browser Support</h3>
+            <div class="browser-grid">
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/chrome/chrome.svg');"></div>
+                    <span class="browser-name">Chrome</span>
+                    <span class="browser-version">93+</span>
+                    <div class="support-status supported"></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/firefox/firefox.svg');"></div>
+                    <span class="browser-name">Firefox</span>
+                    <span class="browser-version">91+</span>
+                    <div class="support-status supported"></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/edge/edge.svg');"></div>
+                    <span class="browser-name">Edge</span>
+                    <span class="browser-version">93+</span>
+                    <div class="support-status supported"></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/safari/safari.svg');"></div>
+                    <span class="browser-name">Safari</span>
+                    <span class="browser-version">16+</span>
+                    <div class="support-status supported"></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/opera/opera.svg');"></div>
+                    <span class="browser-name">Opera</span>
+                    <span class="browser-version">79+</span>
+                    <div class="support-status supported"></div>
+                </div>
+                <div class="browser-item">
+                    <div class="browser-icon" style="background-image: url('https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.1.0/archive/internet-explorer_9-11/internet-explorer_9-11.svg');"></div>
+                    <span class="browser-name">Internet Explorer</span>
+                    <span class="browser-version" data-translate="notSupported">Not Supported</span>
+                    <div class="support-status not-supported"></div>
+                </div>
+            </div>
         </div>
 
         <button class="tool-button" id="generateBtn" data-translate="generate"></button>
@@ -229,82 +336,98 @@
                 "en": {
                     "title": "ED25519 Key Pair Generator (PEM Format)",
                     "generate": "Generate Key Pair",
-                    "generating": "Generating...", // Added translation for "Generating..."
+                    "generating": "Generating...",
                     "priv": "Private Key (PEM)",
                     "pub": "Public Key (PEM)",
                     "back": "← Back to Home",
                     "copyAll": "Copy All",
-                    "copyKeyOnly": "Copy Key Only"
+                    "copyKeyOnly": "Copy Key Only",
+                    "browserSupport": "Browser Support",
+                    "notSupported": "Not Supported"
                 },
                 "zh-CN": {
                     "title": "ED25519 密钥对生成器 (PEM 格式)",
                     "generate": "生成密钥对",
-                    "generating": "正在生成...", // Added translation for "Generating..."
+                    "generating": "正在生成...",
                     "priv": "私钥 (PEM)",
                     "pub": "公钥 (PEM)",
                     "back": "← 返回首页",
                     "copyAll": "复制全部",
-                    "copyKeyOnly": "仅复制密钥"
+                    "copyKeyOnly": "仅复制密钥",
+                    "browserSupport": "浏览器支持",
+                    "notSupported": "不支持"
                 },
                 "zh-TW": {
                     "title": "ED25519 金鑰對產生器 (PEM 格式)",
                     "generate": "產生金鑰對",
-                    "generating": "正在產生...", // Added translation for "Generating..."
+                    "generating": "正在產生...",
                     "priv": "私鑰 (PEM)",
                     "pub": "公開鑰 (PEM)",
                     "back": "← 返回首頁",
                     "copyAll": "複製全部",
-                    "copyKeyOnly": "僅複製金鑰"
+                    "copyKeyOnly": "僅複製金鑰",
+                    "browserSupport": "瀏覽器支援",
+                    "notSupported": "不支援"
                 },
                 "de": {
                     "title": "ED25519 Schlüsselpaar-Generator (PEM-Format)",
                     "generate": "Schlüsselpaar generieren",
-                    "generating": "Wird generiert...", // Added translation for "Generating..."
+                    "generating": "Wird generiert...",
                     "priv": "Privater Schlüssel (PEM)",
                     "pub": "Öffentlicher Schlüssel (PEM)",
                     "back": "← Zurück zur Startseite",
                     "copyAll": "Alles kopieren",
-                    "copyKeyOnly": "Nur Schlüssel kopieren"
+                    "copyKeyOnly": "Nur Schlüssel kopieren",
+                    "browserSupport": "Browser-Unterstützung",
+                    "notSupported": "Nicht unterstützt"
                 },
                 "fr": {
                     "title": "Générateur de paire de clés ED25519 (format PEM)",
                     "generate": "Générer la paire de clés",
-                    "generating": "Génération en cours...", // Added translation for "Generating..."
+                    "generating": "Génération en cours...",
                     "priv": "Clé privée (PEM)",
                     "pub": "Clé publique (PEM)",
                     "back": "← Retour à l'accueil",
                     "copyAll": "Tout copier",
-                    "copyKeyOnly": "Copier la clé seulement"
+                    "copyKeyOnly": "Copier la clé seulement",
+                    "browserSupport": "Support des navigateurs",
+                    "notSupported": "Non supporté"
                 },
                 "ja": {
                     "title": "ED25519 キーペア生成 (PEM形式)",
                     "generate": "キーペアを生成",
-                    "generating": "生成中...", // Added translation for "Generating..."
+                    "generating": "生成中...",
                     "priv": "秘密鍵 (PEM)",
                     "pub": "公開鍵 (PEM)",
                     "back": "← ホームに戻る",
                     "copyAll": "すべてコピー",
-                    "copyKeyOnly": "鍵のみコピー"
+                    "copyKeyOnly": "鍵のみコピー",
+                    "browserSupport": "ブラウザサポート",
+                    "notSupported": "サポート外"
                 },
                 "ko": {
                     "title": "ED25519 키 페어 생성기 (PEM 형식)",
                     "generate": "키 페어 생성",
-                    "generating": "생성 중...", // Added translation for "Generating..."
+                    "generating": "생성 중...",
                     "priv": "개인 키 (PEM)",
                     "pub": "공개 키 (PEM)",
                     "back": "← 홈으로 돌아가기",
                     "copyAll": "모두 복사",
-                    "copyKeyOnly": "키만 복사"
+                    "copyKeyOnly": "키만 복사",
+                    "browserSupport": "브라우저 지원",
+                    "notSupported": "지원되지 않음"
                 },
                 "es": {
                     "title": "Generador de pares de claves ED25519 (formato PEM)",
                     "generate": "Generar par de claves",
-                    "generating": "Generando...", // Added translation for "Generating..."
+                    "generating": "Generando...",
                     "priv": "Clave privada (PEM)",
                     "pub": "Clave pública (PEM)",
                     "back": "← Volver al inicio",
                     "copyAll": "Copiar todo",
-                    "copyKeyOnly": "Copiar solo clave"
+                    "copyKeyOnly": "Copiar solo clave",
+                    "browserSupport": "Soporte de navegadores",
+                    "notSupported": "No compatible"
                 }
             };
 
@@ -335,9 +458,7 @@
             const generateKeys = async () => {
                 const generateBtn = document.getElementById('generateBtn');
                 const currentLang = getLanguage();
-                // Get original button text for current language
                 const originalText = translations[currentLang].generate; 
-                // Get generating text for current language
                 const generatingText = translations[currentLang].generating; 
                 
                 generateBtn.textContent = generatingText;
@@ -382,22 +503,20 @@
              * @param {HTMLElement} buttonElement - The button element that triggered the copy.
              */
             const copyToClipboard = async (textToCopy, buttonElement) => {
-                // Get the original text from the data attribute, not textContent
                 const originalText = buttonElement.getAttribute('data-original-text'); 
 
                 try {
                     await navigator.clipboard.writeText(textToCopy);
                     
-                    buttonElement.classList.add('copied'); // Add class to trigger checkmark
-                    buttonElement.textContent = ''; // Hide original text
+                    buttonElement.classList.add('copied');
+                    buttonElement.textContent = '';
 
                     setTimeout(() => {
-                        buttonElement.classList.remove('copied'); // Remove class to hide checkmark
-                        buttonElement.textContent = originalText; // Restore original text
-                    }, 1500); // Display for 1.5 seconds
+                        buttonElement.classList.remove('copied');
+                        buttonElement.textContent = originalText;
+                    }, 1500);
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
-                    // Removed alert for clipboard errors to adhere to "no alerts" rule
                 }
             };
 
@@ -406,8 +525,6 @@
 
             // Event listeners for copy buttons
             document.querySelectorAll('.copy-button').forEach(button => {
-                // Apply translation first, then store the translated text as original
-                // This ensures the original text stored is always the correct language
                 const currentLang = getLanguage();
                 const key = button.getAttribute('data-translate');
                 button.textContent = translations[currentLang][key] || translations['en'][key];
@@ -420,19 +537,14 @@
                     let textToCopy = textarea.value;
 
                     if (copyType === 'key-only') {
-                        // FIX: Changed regex to be more robust for PEM format extraction
-                        // It now looks for "BEGIN ANY_LABEL" and "END ANY_LABEL", extracting content in between.
                         const match = textToCopy.match(/-----BEGIN [A-Z0-9\s]+-----\n([\s\S]+?)\n-----END [A-Z0-9\s]+-----/);
                         if (match && match[1]) {
-                            textToCopy = match[1].replace(/\s/g, ''); // Remove all whitespace
+                            textToCopy = match[1].replace(/\s/g, '');
                         } else {
-                            // If no key found, textToCopy remains an empty string.
-                            // We explicitly set it to empty string if no match
                             textToCopy = ''; 
                             console.warn("Could not extract key-only content. Is the PEM format correct or is it empty?");
                         }
                     }
-                    // Always attempt to copy, even if textToCopy is an empty string
                     copyToClipboard(textToCopy, event.target);
                 });
             });
@@ -440,11 +552,9 @@
             // Initial application of translations
             applyTranslation();
             // Re-apply original text storage after initial translation
-            // This loop is crucial for ensuring the data-original-text attribute is set correctly
             document.querySelectorAll('.copy-button').forEach(button => {
                 const key = button.getAttribute('data-translate');
                 const lang = getLanguage();
-                // Ensure translation exists, fallback to English if not
                 button.setAttribute('data-original-text', translations[lang][key] || translations['en'][key]);
             });
         });
