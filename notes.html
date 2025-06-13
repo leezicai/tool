@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地笔记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafafa;
+        }
+
+        .new-note-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .new-note-btn:hover {
+            background: #0056b3;
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .note-item:hover {
+            background: #f8f9fa;
+        }
+
+        .note-item.active {
+            background: #e3f2fd;
+            border-right: 3px solid #007bff;
+        }
+
+        .note-item.deleting {
+            background: #fff5f5;
+            cursor: not-allowed;
+        }
+
+        .note-title {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .note-preview {
+            color: #666;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .delete-btn {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-spinner {
+            position: absolute;
+            right: 10px;
+            top: 15px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #dc3545;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .delete-progress {
+            width: calc(100% - 40px);
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #dc3545;
+            width: 0%;
+            transition: none;
+        }
+
+        .delete-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            padding-right: 35px;
+        }
+
+        .countdown-text {
+            font-size: 11px;
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .cancel-btn:hover {
+            background: #5a6268;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .current-note-info {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .save-btn {
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .save-btn:hover {
+            background: #1e7e34;
+        }
+
+        .save-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .editor {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .editor textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="new-note-btn" id="newNoteBtn" onclick="createNewNote()">+ 新建笔记</button>
+        </div>
+        <div class="notes-list" id="notesList">
+            <!-- Notes will be rendered here -->
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="editor-header">
+            <div class="current-note-info" id="currentNoteInfo">选择或创建一个笔记开始编辑</div>
+            <button class="save-btn" id="saveBtn" onclick="saveCurrentNote()" disabled>保存</button>
+        </div>
+        <div class="editor" id="editor">
+            <div class="empty-state" id="emptyState">选择一个笔记开始编辑，或点击新建笔记</div>
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            'zh-CN': {
+                title: '本地笔记',
+                newNote: '+ 新建笔记',
+                selectOrCreateNote: '选择或创建一个笔记开始编辑',
+                selectNoteToEdit: '选择一个笔记开始编辑，或点击新建笔记',
+                save: '保存',
+                saved: '已保存',
+                autoSaved: '已自动保存',
+                hasUnsavedChanges: '有未保存更改',
+                currentNote: '当前笔记',
+                empty: '空',
+                deleteAfterSeconds: '秒后删除',
+                cancel: '取消',
+                deleteNote: '删除笔记',
+                startWriting: '开始写你的笔记...'
+            },
+            'zh-TW': {
+                title: '本地筆記',
+                newNote: '+ 新建筆記',
+                selectOrCreateNote: '選擇或創建一個筆記開始編輯',
+                selectNoteToEdit: '選擇一個筆記開始編輯，或點擊新建筆記',
+                save: '保存',
+                saved: '已保存',
+                autoSaved: '已自動保存',
+                hasUnsavedChanges: '有未保存更改',
+                currentNote: '當前筆記',
+                empty: '空',
+                deleteAfterSeconds: '秒後刪除',
+                cancel: '取消',
+                deleteNote: '刪除筆記',
+                startWriting: '開始寫你的筆記...'
+            },
+            'en': {
+                title: 'Local Notes',
+                newNote: '+ New Note',
+                selectOrCreateNote: 'Select or create a note to start editing',
+                selectNoteToEdit: 'Select a note to start editing, or click new note',
+                save: 'Save',
+                saved: 'Saved',
+                autoSaved: 'Auto-saved',
+                hasUnsavedChanges: 'Unsaved changes',
+                currentNote: 'Current note',
+                empty: 'Empty',
+                deleteAfterSeconds: 'seconds to delete',
+                cancel: 'Cancel',
+                deleteNote: 'Delete note',
+                startWriting: 'Start writing your note...'
+            },
+            'ja': {
+                title: 'ローカルノート',
+                newNote: '+ 新規ノート',
+                selectOrCreateNote: 'ノートを選択または作成して編集を開始',
+                selectNoteToEdit: 'ノートを選択して編集するか、新規ノートをクリック',
+                save: '保存',
+                saved: '保存済み',
+                autoSaved: '自動保存済み',
+                hasUnsavedChanges: '未保存の変更',
+                currentNote: '現在のノート',
+                empty: '空',
+                deleteAfterSeconds: '秒後に削除',
+                cancel: 'キャンセル',
+                deleteNote: 'ノートを削除',
+                startWriting: 'ノートを書き始める...'
+            },
+            'ko': {
+                title: '로컬 노트',
+                newNote: '+ 새 노트',
+                selectOrCreateNote: '편집을 시작하려면 노트를 선택하거나 생성하세요',
+                selectNoteToEdit: '편집할 노트를 선택하거나 새 노트를 클릭하세요',
+                save: '저장',
+                saved: '저장됨',
+                autoSaved: '자동 저장됨',
+                hasUnsavedChanges: '저장되지 않은 변경사항',
+                currentNote: '현재 노트',
+                empty: '비어있음',
+                deleteAfterSeconds: '초 후 삭제',
+                cancel: '취소',
+                deleteNote: '노트 삭제',
+                startWriting: '노트 작성을 시작하세요...'
+            },
+            'es': {
+                title: 'Notas Locales',
+                newNote: '+ Nueva Nota',
+                selectOrCreateNote: 'Selecciona o crea una nota para comenzar a editar',
+                selectNoteToEdit: 'Selecciona una nota para editar, o haz clic en nueva nota',
+                save: 'Guardar',
+                saved: 'Guardado',
+                autoSaved: 'Guardado automáticamente',
+                hasUnsavedChanges: 'Cambios sin guardar',
+                currentNote: 'Nota actual',
+                empty: 'Vacío',
+                deleteAfterSeconds: 'segundos para eliminar',
+                cancel: 'Cancelar',
+                deleteNote: 'Eliminar nota',
+                startWriting: 'Comienza a escribir tu nota...'
+            },
+            'de': {
+                title: 'Lokale Notizen',
+                newNote: '+ Neue Notiz',
+                selectOrCreateNote: 'Wählen oder erstellen Sie eine Notiz zum Bearbeiten',
+                selectNoteToEdit: 'Wählen Sie eine Notiz zum Bearbeiten oder klicken Sie auf neue Notiz',
+                save: 'Speichern',
+                saved: 'Gespeichert',
+                autoSaved: 'Automatisch gespeichert',
+                hasUnsavedChanges: 'Ungespeicherte Änderungen',
+                currentNote: 'Aktuelle Notiz',
+                empty: 'Leer',
+                deleteAfterSeconds: 'Sekunden bis zum Löschen',
+                cancel: 'Abbrechen',
+                deleteNote: 'Notiz löschen',
+                startWriting: 'Beginnen Sie mit dem Schreiben Ihrer Notiz...'
+            },
+            'fr': {
+                title: 'Notes Locales',
+                newNote: '+ Nouvelle Note',
+                selectOrCreateNote: 'Sélectionnez ou créez une note pour commencer à éditer',
+                selectNoteToEdit: 'Sélectionnez une note à éditer, ou cliquez sur nouvelle note',
+                save: 'Enregistrer',
+                saved: 'Enregistré',
+                autoSaved: 'Enregistré automatiquement',
+                hasUnsavedChanges: 'Modifications non enregistrées',
+                currentNote: 'Note actuelle',
+                empty: 'Vide',
+                deleteAfterSeconds: 'secondes avant suppression',
+                cancel: 'Annuler',
+                deleteNote: 'Supprimer la note',
+                startWriting: 'Commencez à écrire votre note...'
+            }
+        };
+
+        // Global variables
+        let notes = {};
+        let currentNoteId = null;
+        let deletingNotes = new Map();
+        let autoSaveTimeout = null;
+        let originalContent = '';
+        let hasUnsavedChanges = false;
+        let currentLanguage = 'zh-CN';
+
+        // Language functions
+        function detectLanguage() {
+            // Check localStorage first
+            const savedLanguage = localStorage.getItem('toolsPageLanguage');
+            if (savedLanguage && translations[savedLanguage]) {
+                return savedLanguage;
+            }
+            
+            // Check browser language
+            const browserLang = navigator.language || navigator.userLanguage;
+            
+            // Try exact match first
+            if (translations[browserLang]) {
+                return browserLang;
+            }
+            
+            // Try language code without region
+            const langPrefix = browserLang.split('-')[0];
+            const supportedLanguages = Object.keys(translations);
+            const matchedLang = supportedLanguages.find(lang => lang.startsWith(langPrefix));
+            
+            if (matchedLang) {
+                return matchedLang;
+            }
+            
+            // Default to English
+            return 'en';
+        }
+
+        function t(key) {
+            return translations[currentLanguage][key] || translations['en'][key] || key;
+        }
+
+        function updateUI() {
+            // Update title
+            document.title = t('title');
+            
+            // Update static elements
+            document.getElementById('newNoteBtn').textContent = t('newNote');
+            
+            // Update current note info and save button
+            const currentNoteInfo = document.getElementById('currentNoteInfo');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            if (currentNoteId) {
+                const note = notes[currentNoteId];
+                currentNoteInfo.textContent = `${t('currentNote')}: ${note.title}`;
+                
+                if (hasUnsavedChanges) {
+                    saveBtn.textContent = t('hasUnsavedChanges');
+                } else {
+                    saveBtn.textContent = t('save');
+                }
+            } else {
+                currentNoteInfo.textContent = t('selectOrCreateNote');
+                saveBtn.textContent = t('save');
+            }
+            
+            // Update empty state
+            const emptyState = document.getElementById('emptyState');
+            if (emptyState) {
+                emptyState.textContent = t('selectNoteToEdit');
+            }
+            
+            // Update textarea placeholder if exists
+            const textarea = document.getElementById('noteTextarea');
+            if (textarea) {
+                textarea.placeholder = t('startWriting');
+            }
+            
+            // Re-render notes list to update delete countdown texts
+            renderNotesList();
+        }
+
+        // localStorage functions
+        function saveToStorage() {
+            try {
+                localStorage.setItem('localNotes', JSON.stringify(notes));
+            } catch (e) {
+                console.error('Failed to save notes to localStorage:', e);
+            }
+        }
+
+        function loadFromStorage() {
+            try {
+                const saved = localStorage.getItem('localNotes');
+                if (saved) {
+                    notes = JSON.parse(saved);
+                } else {
+                    notes = {};
+                }
+            } catch (e) {
+                console.error('Failed to load notes from localStorage:', e);
+                notes = {};
+            }
+        }
+
+        // Format date to 24-hour format: YYYY-MM-DD HH:mm:ss
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Initialize app
+        function initApp() {
+            currentLanguage = detectLanguage();
+            loadFromStorage();
+            updateUI();
+            renderNotesList();
+        }
+
+        // Create new note
+        function createNewNote() {
+            // Save current note before creating new one
+            if (currentNoteId) {
+                saveCurrentNoteBeforeSwitch();
+            }
+            
+            const noteId = generateUUID();
+            const newNote = {
+                id: noteId,
+                title: t('empty'),
+                content: '',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            notes[noteId] = newNote;
+            saveToStorage();
+            renderNotesList();
+            selectNote(noteId);
+        }
+
+        // Generate title from content
+        function generateTitle(content) {
+            if (!content || content.trim() === '') {
+                return t('empty');
+            }
+            
+            const lines = content.split('\n');
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.length > 0) {
+                    return trimmed.length > 15 ? trimmed.substring(0, 15) + '...' : trimmed;
+                }
+            }
+            return t('empty');
+        }
+
+        // Render notes list
+        function renderNotesList() {
+            const notesList = document.getElementById('notesList');
+            const sortedNotes = Object.values(notes).sort((a, b) => 
+                new Date(b.updatedAt) - new Date(a.updatedAt)
+            );
+
+            notesList.innerHTML = sortedNotes.map(note => {
+                const isDeleting = deletingNotes.has(note.id);
+                
+                return `
+                    <div class="note-item ${currentNoteId === note.id ? 'active' : ''} ${isDeleting ? 'deleting' : ''}" 
+                         data-note-id="${note.id}"
+                         onclick="${isDeleting ? '' : `selectNote('${note.id}')`}">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-preview">${formatDateTime(note.updatedAt)}</div>
+                        ${isDeleting ? `
+                            <div class="delete-spinner"></div>
+                            <div class="delete-progress">
+                                <div class="progress-fill" data-progress-fill="${note.id}"></div>
+                            </div>
+                            <div class="delete-controls">
+                                <span class="countdown-text" data-countdown="${note.id}">5${t('deleteAfterSeconds')}</span>
+                                <button class="cancel-btn" onclick="cancelDelete('${note.id}')">${t('cancel')}</button>
+                            </div>
+                        ` : `
+                            <button class="delete-btn" onclick="startDelete('${note.id}')" title="${t('deleteNote')}">×</button>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update delete progress without re-rendering entire list
+        function updateDeleteProgress(noteId, progress, remainingSeconds) {
+            const progressFill = document.querySelector(`[data-progress-fill="${noteId}"]`);
+            const countdownText = document.querySelector(`[data-countdown="${noteId}"]`);
+            
+            if (progressFill) {
+                progressFill.style.width = `${progress}%`;
+            }
+            
+            if (countdownText) {
+                countdownText.textContent = `${remainingSeconds}${t('deleteAfterSeconds')}`;
+            }
+        }
+
+        // Select note
+        function selectNote(noteId) {
+            if (deletingNotes.has(noteId)) return;
+            
+            // Save current note before switching
+            if (currentNoteId) {
+                saveCurrentNoteBeforeSwitch();
+            }
+            
+            currentNoteId = noteId;
+            const note = notes[noteId];
+            
+            const editor = document.getElementById('editor');
+            const currentNoteInfo = document.getElementById('currentNoteInfo');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            editor.innerHTML = `<textarea id="noteTextarea" placeholder="${t('startWriting')}">${note.content}</textarea>`;
+            
+            // Store original content for change detection
+            originalContent = note.content;
+            hasUnsavedChanges = false;
+            
+            // Add event listeners for auto-save
+            const textarea = document.getElementById('noteTextarea');
+            textarea.addEventListener('input', onContentChange);
+            textarea.addEventListener('keyup', onContentChange);
+            textarea.addEventListener('paste', onContentChange);
+            
+            currentNoteInfo.textContent = `${t('currentNote')}: ${note.title}`;
+            saveBtn.disabled = false;
+            saveBtn.style.background = '#28a745';
+            saveBtn.textContent = t('save');
+            
+            renderNotesList();
+        }
+
+        // Handle content change with auto-save
+        function onContentChange(event) {
+            const textarea = document.getElementById('noteTextarea');
+            if (!textarea) return;
+            
+            // Check if content actually changed
+            const currentContent = textarea.value;
+            if (currentContent === originalContent) {
+                return;
+            }
+            
+            hasUnsavedChanges = true;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.style.background = '#ffc107';
+                saveBtn.textContent = t('hasUnsavedChanges');
+            }
+            
+            // Clear existing timeout
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+            }
+            
+            // Set up auto-save after 2 seconds of inactivity
+            autoSaveTimeout = setTimeout(() => {
+                autoSaveNote();
+            }, 2000);
+        }
+
+        // Auto-save function
+        function autoSaveNote() {
+            if (!currentNoteId || !hasUnsavedChanges) {
+                return;
+            }
+            
+            const textarea = document.getElementById('noteTextarea');
+            if (!textarea) {
+                return;
+            }
+            
+            const content = textarea.value;
+            
+            notes[currentNoteId].content = content;
+            notes[currentNoteId].title = generateTitle(content);
+            notes[currentNoteId].updatedAt = new Date().toISOString();
+            
+            // Save to localStorage
+            saveToStorage();
+            
+            // Update tracking variables
+            originalContent = content;
+            hasUnsavedChanges = false;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            const currentNoteInfo = document.getElementById('currentNoteInfo');
+            
+            if (saveBtn) {
+                saveBtn.style.background = '#28a745';
+                saveBtn.textContent = t('autoSaved');
+                
+                // Reset save button text after 2 seconds
+                setTimeout(() => {
+                    if (saveBtn.textContent === t('autoSaved')) {
+                        saveBtn.textContent = t('save');
+                    }
+                }, 2000);
+            }
+            
+            if (currentNoteInfo) {
+                currentNoteInfo.textContent = `${t('currentNote')}: ${notes[currentNoteId].title}`;
+            }
+            
+            renderNotesList();
+            
+            // Clear the timeout
+            autoSaveTimeout = null;
+        }
+
+        // Save current note before switching
+        function saveCurrentNoteBeforeSwitch() {
+            if (!currentNoteId || !hasUnsavedChanges) {
+                return;
+            }
+            
+            // Clear auto-save timeout
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = null;
+            }
+            
+            const textarea = document.getElementById('noteTextarea');
+            if (!textarea) return;
+            
+            const content = textarea.value;
+            
+            notes[currentNoteId].content = content;
+            notes[currentNoteId].title = generateTitle(content);
+            notes[currentNoteId].updatedAt = new Date().toISOString();
+            
+            // Save to localStorage
+            saveToStorage();
+            
+            // Update tracking variables
+            originalContent = content;
+            hasUnsavedChanges = false;
+        }
+
+        // Save current note (manual save)
+        function saveCurrentNote() {
+            if (!currentNoteId) return;
+            
+            // Clear auto-save timeout when manually saving
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = null;
+            }
+            
+            const textarea = document.getElementById('noteTextarea');
+            if (!textarea) return;
+            
+            const content = textarea.value;
+            
+            // Only update if content changed
+            if (content !== originalContent) {
+                notes[currentNoteId].content = content;
+                notes[currentNoteId].title = generateTitle(content);
+                notes[currentNoteId].updatedAt = new Date().toISOString();
+                
+                // Save to localStorage
+                saveToStorage();
+                
+                // Update tracking variables
+                originalContent = content;
+                renderNotesList();
+            }
+            
+            hasUnsavedChanges = false;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            const currentNoteInfo = document.getElementById('currentNoteInfo');
+            
+            saveBtn.style.background = '#28a745';
+            saveBtn.textContent = t('saved');
+            currentNoteInfo.textContent = `${t('currentNote')}: ${notes[currentNoteId].title}`;
+            
+            // Reset save button text after 2 seconds
+            setTimeout(() => {
+                saveBtn.textContent = t('save');
+            }, 2000);
+        }
+
+        // Start delete countdown
+        function startDelete(noteId) {
+            if (deletingNotes.has(noteId)) return;
+            
+            const totalTime = 5000; // 5 seconds
+            deletingNotes.set(noteId, {
+                remaining: 5,
+                startTime: Date.now(),
+                totalTime: totalTime,
+                interval: null
+            });
+            
+            // First render the delete UI
+            renderNotesList();
+            
+            const deleteInfo = deletingNotes.get(noteId);
+            deleteInfo.interval = setInterval(() => {
+                const elapsed = Date.now() - deleteInfo.startTime;
+                const remaining = Math.max(0, totalTime - elapsed);
+                const remainingSeconds = Math.ceil(remaining / 1000);
+                const progressPercent = Math.min(100, (elapsed / totalTime) * 100);
+                
+                deleteInfo.remaining = remainingSeconds;
+                
+                if (remaining <= 0) {
+                    // Delete the note
+                    clearInterval(deleteInfo.interval);
+                    deletingNotes.delete(noteId);
+                    delete notes[noteId];
+                    
+                    // Save to localStorage
+                    saveToStorage();
+                    
+                    // If this was the current note, clear editor
+                    if (currentNoteId === noteId) {
+                        currentNoteId = null;
+                        originalContent = '';
+                        hasUnsavedChanges = false;
+                        document.getElementById('editor').innerHTML = `<div class="empty-state" id="emptyState">${t('selectNoteToEdit')}</div>`;
+                        document.getElementById('currentNoteInfo').textContent = t('selectOrCreateNote');
+                        document.getElementById('saveBtn').disabled = true;
+                    }
+                    
+                    // Refresh the list after deletion
+                    renderNotesList();
+                } else {
+                    // Update progress bar and countdown text without re-rendering entire list
+                    updateDeleteProgress(noteId, progressPercent, remainingSeconds);
+                }
+            }, 100); // Update every 100ms for smooth progress
+        }
+
+        // Cancel delete
+        function cancelDelete(noteId) {
+            const deleteInfo = deletingNotes.get(noteId);
+            if (deleteInfo && deleteInfo.interval) {
+                clearInterval(deleteInfo.interval);
+            }
+            deletingNotes.delete(noteId);
+            renderNotesList();
+        }
+
+        // Initialize app when page loads
+        window.onload = initApp;
+    </script>
+</body>
+</html>

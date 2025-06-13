@@ -198,8 +198,6 @@
             height: 150px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
             text-align: center;
         }
 
@@ -210,21 +208,23 @@
         }
 
         .tool-icon {
-            font-size: 36px;
-            margin-bottom: 15px;
+            font-size: 48px;
             color: #667eea;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
         }
 
         .tool-name {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .tool-desc {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 2;
+            line-height: 1.3;
         }
 
         .no-results {
@@ -263,6 +263,12 @@
             .tool-card {
                 height: 130px;
                 padding: 20px;
+            }
+            .tool-icon {
+                font-size: 40px;
+            }
+            .tool-name {
+                font-size: 16px;
             }
         }
     </style>
@@ -312,12 +318,11 @@
 
             // --- CONFIGURATION ---
             const tools = [
-                <!--{ id: 'calculator', icon: '🧮', url: './calculator.html', names: { 'zh-CN': '计算器', 'en': 'Calculator', 'zh-TW': '計算器', 'ja': '電卓', 'ko': '계산기', 'es': 'Calculadora', 'de': 'Rechner', 'fr': 'Calculatrice' }, descriptions: { 'zh-CN': '基础数学计算工具', 'en': 'Basic math calculation tool', 'zh-TW': '基礎數學計算工具', 'ja': '基本的な数学計算ツール', 'ko': '기본 수학 계산 도구', 'es': 'Herramienta de cálculo matemático básico', 'de': 'Grundlegendes Mathematik-Rechenwerkzeug', 'fr': 'Outil de calcul mathématique de base' }},-->
-                <!--{ id: 'text-editor', icon: '📝', url: './text-editor.html', names: { 'zh-CN': '文本编辑器', 'en': 'Text Editor', 'zh-TW': '文本編輯器', 'ja': 'テキストエディタ', 'ko': '텍스트 에디터', 'es': 'Editor de Texto', 'de': 'Texteditor', 'fr': 'Éditeur de Texte' }, descriptions: { 'zh-CN': '在线文本编辑和处理', 'en': 'Online text editing and processing', 'zh-TW': '在線文本編輯和處理', 'ja': 'オンラインテキスト編集と処理', 'ko': '온라인 텍스트 편집 및 처리', 'es': 'Edición y procesamiento de texto en línea', 'de': 'Online-Textbearbeitung und -verarbeitung', 'fr': 'Édition et traitement de texte en ligne' }},-->
-                <!--{ id: 'color-picker', icon: '🎨', url: './color-picker.html', names: { 'zh-CN': '颜色选择器', 'en': 'Color Picker', 'zh-TW': '顏色選擇器', 'ja': 'カラーピッカー', 'ko': '색상 선택기', 'es': 'Selector de Color', 'de': 'Farbwähler', 'fr': 'Sélecteur de Couleur' }, descriptions: { 'zh-CN': '颜色选择和调色板工具', 'en': 'Color selection and palette tool', 'zh-TW': '顏色選擇和調色板工具', 'ja': '色選択とパレットツール', 'ko': '색상 선택 및 팔레트 도구', 'es': 'Herramienta de selección de color y paleta', 'de': 'Farbauswahl- und Palettenwerkzeug', 'fr': 'Outil de sélection de couleur et palette' }},-->
-                <!--{ id: 'qr-generator', icon: '📱', url: './qr-generator.html', names: { 'zh-CN': '二维码生成器', 'en': 'QR Code Generator', 'zh-TW': '二維碼生成器', 'ja': 'QRコードジェネレーター', 'ko': 'QR 코드 생성기', 'es': 'Generador de Código QR', 'de': 'QR-Code-Generator', 'fr': 'Générateur de Code QR' }, descriptions: { 'zh-CN': '快速生成二维码', 'en': 'Quickly generate QR codes', 'zh-TW': '快速生成二維碼', 'ja': 'QRコードを素早く生成', 'ko': 'QR 코드 빠르게 생성', 'es': 'Generar códigos QR rápidamente', 'de': 'QR-Codes schnell generieren', 'fr': 'Générer rapidement des codes QR' }},-->
-                <!--{ id: 'unit-converter', icon: '⚖️', url: './unit-converter.html', names: { 'zh-CN': '单位转换器', 'en': 'Unit Converter', 'zh-TW': '單位轉換器', 'ja': '单位变换器', 'ko': '단위 변환기', 'es': 'Convertidor de Unidades', 'de': 'Einheitenumrechner', 'fr': 'Convertisseur d\'Unités' }, descriptions: { 'zh-CN': '各种单位之间的转换', 'en': 'Convert between various units', 'zh-TW': '各種單位之間的轉換', 'ja': '様々な単位間の変換', 'ko': '다양한 단위 간 변환', 'es': 'Convertir entre varias unidades', 'de': 'Zwischen verschiedenen Einheiten umrechnen', 'fr': 'Convertir entre différentes unités' }},-->
-                { id: 'ed25519-generator', icon: '🔐', url: './ed25519-generator.html', names: { 'zh-CN': 'ED25519 密钥生成器', 'en': 'ED25519 Key Generator', 'zh-TW': 'ED25519 金鑰產生器', 'ja': 'ED25519 キーペア生成', 'ko': 'ED25519 키 페어 생성기', 'es': 'Generador de Claves ED25519', 'de': 'ED25519 Schlüssel-Generator', 'fr': 'Générateur de Clés ED25519' }, descriptions: { 'zh-CN': '生成 ED25519 密钥对', 'en': 'Generate ED25519 key pairs', 'zh-TW': '產生 ED25519 金鑰對', 'ja': 'ED25519 キーペアを生成', 'ko': 'ED25519 키 페어 생성', 'es': 'Generar pares de claves ED25519', 'de': 'ED25519-Schlüsselpaare generieren', 'fr': 'Générer des paires de clés ED25519' }}
+                // Notes Tool - Added first for better visibility
+                { id: 'notes', icon: '📝', url: './notes.html', names: { 'zh-CN': '笔记', 'en': 'Notes', 'zh-TW': '筆記', 'ja': 'ノート', 'ko': '노트', 'es': 'Notas', 'de': 'Notizen', 'fr': 'Notes' }},
+                
+                // Existing tools
+                { id: 'ed25519-generator', icon: '🔐', url: './ed25519-generator.html', names: { 'zh-CN': 'ED25519 密钥生成器', 'en': 'ED25519 Key Generator', 'zh-TW': 'ED25519 金鑰產生器', 'ja': 'ED25519 キーペア生成', 'ko': 'ED25519 키 페어 생성기', 'es': 'Generador de Claves ED25519', 'de': 'ED25519 Schlüssel-Generator', 'fr': 'Générateur de Clés ED25519' }}
             ];
 
             const translations = {
@@ -375,7 +380,6 @@
                         card.innerHTML = `
                             <div class="tool-icon">${tool.icon}</div>
                             <div class="tool-name">${tool.names[currentLanguage] || tool.names['en']}</div>
-                            <div class="tool-desc">${tool.descriptions[currentLanguage] || tool.descriptions['en']}</div>
                         `;
                         fragment.appendChild(card);
                     });
@@ -417,8 +421,7 @@
             const filterAndRenderTools = (query) => {
                 const filtered = !query ? tools : tools.filter(tool => {
                     const name = (tool.names[currentLanguage] || tool.names['en']).toLowerCase();
-                    const desc = (tool.descriptions[currentLanguage] || tool.descriptions['en']).toLowerCase();
-                    return name.includes(query) || desc.includes(query);
+                    return name.includes(query);
                 });
                 renderTools(filtered);
             };
