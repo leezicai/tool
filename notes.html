@@ -142,7 +142,6 @@
             height: 100%;
             background: #dc3545;
             width: 0%;
-            /* 移除 transition: none; 添加平滑过渡 */
             transition: width 0.1s linear; /* 调整过渡时间以获得更平滑的效果 */
         }
 
@@ -228,6 +227,22 @@
             cursor: not-allowed;
         }
         
+        /* 返回首页按钮样式 */
+        .home-btn {
+            padding: 8px 16px;
+            background: #6c757d; /* 灰色 */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .home-btn:hover {
+            background: #5a6268; /* 深灰色 */
+        }
+
         .help-tooltip {
             position: relative;
         }
@@ -383,6 +398,7 @@
                         </ul>
                     </div>
                 </div>
+                <button class="home-btn" id="homeBtn" onclick="window.location.href='index.html'">返回首页</button>
                 <button class="save-btn" id="saveBtn" onclick="saveCurrentNote()" disabled>保存</button>
             </div>
         </div>
@@ -392,7 +408,144 @@
     </div>
 
     <script>
-        const translations = {'zh-CN':{title:'本地笔记',newNote:'+ 新建笔记',selectOrCreateNote:'选择或创建一个笔记开始编辑',selectNoteToEdit:'选择一个笔记开始编辑，或点击新建笔记',save:'保存',saved:'已保存',autoSaved:'已自动保存',hasUnsavedChanges:'有未保存更改',currentNote:'当前笔记',empty:'新笔记',deleteAfterSeconds:'秒后删除',cancel:'取消',deleteNote:'删除笔记',startWriting:'开始写你的笔记...'},'zh-TW':{title:'本地筆記',newNote:'+ 新建筆記',selectOrCreateNote:'選擇或創建一個筆記開始編輯',selectNoteToEdit:'選擇一個筆記開始編輯，或點擊新建筆記',save:'保存',saved:'已保存',autoSaved:'已自動保存',hasUnsavedChanges:'有未保存更改',currentNote:'當前筆記',empty:'新筆記',deleteAfterSeconds:'秒後刪除',cancel:'取消',deleteNote:'刪除筆記',startWriting:'開始寫你的筆記...'},en:{title:'Local Notes',newNote:'+ New Note',selectOrCreateNote:'Select or create a note to start editing',selectNoteToEdit:'Select a note to start editing, or click new note',save:'Save',saved:'Saved',autoSaved:'Auto-saved',hasUnsavedChanges:'Unsaved changes',currentNote:'Current note',empty:'New Note',deleteAfterSeconds:'seconds to delete',cancel:'Cancel',deleteNote:'Delete note',startWriting:'Start writing your note...'},ja:{title:'ローカルノート',newNote:'+ 新規ノート',selectOrCreateNote:'ノートを選択または作成して編集を開始',selectNoteToEdit:'ノートを選択して編集するか、新規ノートをクリック',save:'保存',saved:'保存済み',autoSaved:'自動保存済み',hasUnsavedChanges:'未保存の変更',currentNote:'現在のノート',empty:'新規ノート',deleteAfterSeconds:'秒後に削除',cancel:'キャンセル',deleteNote:'ノートを削除',startWriting:'ノートを書き始める...'},ko:{title:'로컬 노트',newNote:'+ 새 노트',selectOrCreateNote:'편집을 시작하려면 노트를 선택하거나 생성하세요',selectNoteToEdit:'편집할 노트를 선택하거나 새 노트를 클릭하세요',save:'저장',saved:'저장됨',autoSaved:'자동 저장됨',hasUnsavedChanges:'저장되지 않은 변경사항',currentNote:'현재 노트',empty:'새 노트',deleteAfterSeconds:'초 후 삭제',cancel:'취소',deleteNote:'노트 삭제',startWriting:'노트 작성을 시작하세요...'},es:{title:'Notas Locales',newNote:'+ Nueva Nota',selectOrCreateNote:'Selecciona o crea una nota para comenzar a editar',selectNoteToEdit:'Selecciona una nota para editar, o haz clic en nueva nota',save:'Guardar',saved:'Guardado',autoSaved:'Guardado automáticamente',hasUnsavedChanges:'Cambios sin guardar',currentNote:'Nota actual',empty:'Nueva Nota',deleteAfterSeconds:'segundos para eliminar',cancel:'Cancelar',deleteNote:'Eliminar nota',startWriting:'Comienza a escribir tu nota...'},de:{title:'Lokale Notizen',newNote:'+ Neue Notiz',selectOrCreateNote:'Wählen oder erstellen Sie eine Notiz zum Bearbeiten',selectNoteToEdit:'Wählen Sie eine Notiz zum Bearbeiten oder klicken Sie auf neue Notiz',save:'Speichern',saved:'Gespeichert',autoSaved:'Automatisch gespeichert',hasUnsavedChanges:'Ungespeicherte Änderungen',currentNote:'Aktuelle Notiz',empty:'Neue Notiz',deleteAfterSeconds:'Sekunden bis zum Löschen',cancel:'Abbrechen',deleteNote:'Notiz löschen',startWriting:'Beginnen Sie mit dem Schreiben Ihrer Notiz...'},fr:{title:'Notes Locales',newNote:'+ Nouvelle Note',selectOrCreateNote:'Sélectionnez ou créez une note pour commencer à éditer',selectNoteToEdit:'Sélectionnez une note à éditer, ou cliquez sur nouvelle note',save:'Enregistrer',saved:'Enregistré',autoSaved:'Enregistré automatiquement',hasUnsavedChanges:'Modifications non enregistrées',currentNote:'Note actuelle',empty:'Nouvelle Note',deleteAfterSeconds:'secondes avant suppression',cancel:'Annuler',deleteNote:'Supprimer la note',startWriting:'Commencez à écrire votre note...'}};
+        const translations = {
+            'zh-CN':{
+                title:'本地笔记',
+                newNote:'+ 新建笔记',
+                selectOrCreateNote:'选择或创建一个笔记开始编辑',
+                selectNoteToEdit:'选择一个笔记开始编辑，或点击新建笔记',
+                save:'保存',
+                saved:'已保存',
+                autoSaved:'已自动保存',
+                hasUnsavedChanges:'有未保存更改',
+                currentNote:'当前笔记',
+                empty:'新笔记',
+                deleteAfterSeconds:'秒后删除',
+                cancel:'取消',
+                deleteNote:'删除笔记',
+                startWriting:'开始写你的笔记...',
+                home: '返回首页' // Added translation for 'Home' button
+            },
+            'zh-TW':{
+                title:'本地筆記',
+                newNote:'+ 新建筆記',
+                selectOrCreateNote:'選擇或創建一個筆記開始編輯',
+                selectNoteToEdit:'選擇一個筆記開始編輯，或點擊新建筆記',
+                save:'保存',
+                saved:'已保存',
+                autoSaved:'已自動保存',
+                hasUnsavedChanges:'有未保存更改',
+                currentNote:'當前筆記',
+                empty:'新筆記',
+                deleteAfterSeconds:'秒後刪除',
+                cancel:'取消',
+                deleteNote:'刪除筆記',
+                startWriting:'開始寫你的筆記...',
+                home: '返回首頁' // Added translation for 'Home' button
+            },
+            en:{
+                title:'Local Notes',
+                newNote:'+ New Note',
+                selectOrCreateNote:'Select or create a note to start editing',
+                selectNoteToEdit:'Select a note to start editing, or click new note',
+                save:'Save',
+                saved:'Saved',
+                autoSaved:'Auto-saved',
+                hasUnsavedChanges:'Unsaved changes',
+                currentNote:'Current note',
+                empty:'New Note',
+                deleteAfterSeconds:'seconds to delete',
+                cancel:'Cancel',
+                deleteNote:'Delete note',
+                startWriting:'Start writing your note...',
+                home: 'Home' // Added translation for 'Home' button
+            },
+            ja:{
+                title:'ローカルノート',
+                newNote:'+ 新規ノート',
+                selectOrCreateNote:'ノートを選択または作成して編集を開始',
+                selectNoteToEdit:'ノートを選択して編集するか、新規ノートをクリック',
+                save:'保存',
+                saved:'保存済み',
+                autoSaved:'自動保存済み',
+                hasUnsavedChanges:'未保存の変更',
+                currentNote:'現在のノート',
+                empty:'新規ノート',
+                deleteAfterSeconds:'秒後に削除',
+                cancel:'キャンセル',
+                deleteNote:'ノートを削除',
+                startWriting:'ノートを書き始める...',
+                home: 'ホームページ' // Added translation for 'Home' button
+            },
+            ko:{
+                title:'로컬 노트',
+                newNote:'+ 새 노트',
+                selectOrCreateNote:'편집을 시작하려면 노트를 선택하거나 생성하세요',
+                selectNoteToEdit:'편집할 노트를 선택하거나 새 노트를 클릭하세요',
+                save:'저장',
+                saved:'저장됨',
+                autoSaved:'자동 저장됨',
+                hasUnsavedChanges:'저장되지 않은 변경사항',
+                currentNote:'현재 노트',
+                empty:'새 노트',
+                deleteAfterSeconds:'초 후 삭제',
+                cancel:'취소',
+                deleteNote:'노트 삭제',
+                startWriting:'노트 작성을 시작하세요...',
+                home: '홈으로' // Added translation for 'Home' button
+            },
+            es:{
+                title:'Notas Locales',
+                newNote:'+ Nueva Nota',
+                selectOrCreateNote:'Selecciona o crea una nota para comenzar a editar',
+                selectNoteToEdit:'Selecciona una nota para editar, o haz clic en nueva nota',
+                save:'Guardar',
+                saved:'Guardado',
+                autoSaved:'Guardado automáticamente',
+                hasUnsavedChanges:'Cambios sin guardar',
+                currentNote:'Nota actual',
+                empty:'Nueva Nota',
+                deleteAfterSeconds:'segundos para eliminar',
+                cancel:'Cancelar',
+                deleteNote:'Eliminar nota',
+                startWriting:'Comienza a escribir tu nota...',
+                home: 'Inicio' // Added translation for 'Home' button
+            },
+            de:{
+                title:'Lokale Notizen',
+                newNote:'+ Neue Notiz',
+                selectOrCreateNote:'Wählen oder erstellen Sie eine Notiz zum Bearbeiten',
+                selectNoteToEdit:'Wählen Sie eine Notiz zum Bearbeiten oder klicken Sie auf neue Notiz',
+                save:'Speichern',
+                saved:'Gespeichert',
+                autoSaved:'Automatisch gespeichert',
+                hasUnsavedChanges:'Ungespeicherte Änderungen',
+                currentNote:'Aktuelle Notiz',
+                empty:'Neue Notiz',
+                deleteAfterSeconds:'Sekunden bis zum Löschen',
+                cancel:'Abbrechen',
+                deleteNote:'Notiz löschen',
+                startWriting:'Beginnen Sie mit dem Schreiben Ihrer Notiz...',
+                home: 'Startseite' // Added translation for 'Home' button
+            },
+            fr:{
+                title:'Notes Locales',
+                newNote:'+ Nouvelle Note',
+                selectOrCreateNote:'Sélectionnez ou créez une note pour commencer à éditer',
+                selectNoteToEdit:'Sélectionnez une note à éditer, ou cliquez sur nouvelle note',
+                save:'Enregistrer',
+                saved:'Enregistré',
+                autoSaved:'Enregistré automatiquement',
+                hasUnsavedChanges:'Modifications non enregistrées',
+                currentNote:'Note actuelle',
+                empty:'Nouvelle Note',
+                deleteAfterSeconds:'secondes avant suppression',
+                cancel:'Annuler',
+                deleteNote:'Supprimer la note',
+                startWriting:'Commencez à écrire votre note...',
+                home: 'Accueil' // Added translation for 'Home' button
+            }
+        };
         let notes={},currentNoteId=null,deletingNotes=new Map,autoSaveTimeout=null,originalContent="",hasUnsavedChanges=!1,currentLanguage="zh-CN";
         
         // Function to detect user's preferred language
@@ -415,6 +568,8 @@
         function updateUI(){
             document.title=t("title");
             document.getElementById("newNoteBtn").textContent=t("newNote");
+            // Update Home button text
+            document.getElementById("homeBtn").textContent = t("home"); 
             const e=document.getElementById("currentNoteInfo"),o=document.getElementById("saveBtn");
             if(currentNoteId){
                 const n=notes[currentNoteId];
